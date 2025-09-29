@@ -22,7 +22,7 @@ class SiteStateDO(DurableObject):
             try:
                 data = request.json()  # DO fetch is sync; Request is FFI-backed
             except Exception:
-                return Response(json.dumps({"error": "invalid JSON"}), {"status": 400})
+                return Response(json.dumps({"error": "invalid JSON"}), status=400)
 
             ts = data.get("ts", 0)
             key = f"run:{ts}"
@@ -37,7 +37,7 @@ class SiteStateDO(DurableObject):
                 "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
                 [payload],
             )
-            return Response(json.dumps({"ok": True}), {"status": 200})
+            return Response(json.dumps({"ok": True}), status=200)
 
         if request.method == "GET" and path.endswith("/list"):
             rows = self.ctx.storage.sql.exec(
@@ -51,7 +51,8 @@ class SiteStateDO(DurableObject):
             latest_val = json.loads(latest_row.value) if latest_row else None
             return Response(
                 json.dumps({"latest": latest_val, "history": entries[:20]}),
-                {"status": 200, "headers": {"content-type": "application/json"}},
+                status=200,
+                headers={"content-type": "application/json"},
             )
 
-        return Response("Not found", {"status": 404})
+        return Response("Not found", status=404)

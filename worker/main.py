@@ -295,14 +295,16 @@ class Default(WorkerEntrypoint):
             except Exception:
                 return Response(
                     json.dumps({"error": "invalid JSON"}),
-                    {"status": 400, "headers": {"content-type": "application/json"}},
+                    status=400,
+                    headers={"content-type": "application/json"},
                 )
 
             target = (body or {}).get("url") if isinstance(body, dict) else None
             if not target:
                 return Response(
-                    json.dumps({"error": "Missing 'url'"}),
-                    {"status": 400, "headers": {"content-type": "application/json"}},
+                    json.dumps({"error": "Missing 'url'"}),9
+                    status=400,
+                    headers={"content-type": "application/json"},
                 )
 
             try:
@@ -311,7 +313,8 @@ class Default(WorkerEntrypoint):
             except Exception as exc:
                 return Response(
                     json.dumps({"error": f"Failed to fetch target: {exc}"}),
-                    {"status": 502, "headers": {"content-type": "application/json"}},
+                    status=502,
+                    headers={"content-type": "application/json"},
                 )
 
             header_findings = analyze_headers(http_res.headers)
@@ -350,7 +353,8 @@ class Default(WorkerEntrypoint):
                         "fix_plan": plan,
                     }
                 ),
-                {"status": 200, "headers": {"content-type": "application/json"}},
+                status=200,
+                headers={"content-type": "application/json"},
             )
 
         if request.method == "GET" and path == "/api/history":
@@ -360,17 +364,23 @@ class Default(WorkerEntrypoint):
             if not domain:
                 return Response(
                     json.dumps({"error": "Missing 'domain'"}),
-                    {"status": 400, "headers": {"content-type": "application/json"}},
+                    status=400,
+                    headers={"content-type": "application/json"},
                 )
             do_id = env.SITE_STATE.idFromName(domain)
             stub = env.SITE_STATE.get(do_id)
             res = await stub.fetch("/list")
-            return Response(await res.text(), {"status": 200, "headers": {"content-type": "application/json"}})
+            return Response(
+                await res.text(),
+                status=200,
+                headers={"content-type": "application/json"},
+            )
 
         if path == "/":
             return Response(
                 HTML_PAGE,
-                {"status": 200, "headers": {"content-type": "text/html; charset=utf-8"}},
+                status=200,
+                headers={"content-type": "text/html; charset=utf-8"},
             )
 
-        return Response("Not found", {"status": 404})
+        return Response("Not found", status=404)
