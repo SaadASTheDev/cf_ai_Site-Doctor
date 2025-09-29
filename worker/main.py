@@ -302,7 +302,7 @@ class Default(WorkerEntrypoint):
             target = (body or {}).get("url") if isinstance(body, dict) else None
             if not target:
                 return Response(
-                    json.dumps({"error": "Missing 'url'"}),
+                    json.dumps({"error": "Missing 'url'"}),9
                     status=400,
                     headers={"content-type": "application/json"},
                 )
