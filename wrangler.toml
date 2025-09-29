@@ -1,0 +1,12 @@
+name = "site-doctor-agent"
+main = "worker/main.py"
+compatibility_date = "2025-09-29"
+compatibility_flags = ["python_workers"]
+
+[[durable_objects.bindings]]
+name = "SITE_STATE"
+class_name = "SiteStateDO"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["SiteStateDO"]
